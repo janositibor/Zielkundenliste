@@ -1,3 +1,19 @@
+let AktualLists = {};
+
+let AdatListak = {
+    "ZielKundenID": "ZielKundenIDList",
+    "KundenPRIO": "KundenPRIOList",
+    "WerKummertSich": "WerKummertSichList",
+    "Firmenname": "FirmennameList",
+    "NameDesKontakts": "NameDesKontaktsList",
+    "RechnungsAdresse": "RechnungsAdresseList",
+    "Ort": "OrtList",
+    "Postleitzahl": "PostleitzahlList",
+    "Land_Region": "Land_RegionList",
+    "Telefonnummer": "TelefonnummersList",
+    "EMailAdresse": "EMailAdresseList",
+    "Anmerkungen": "AnmerkungenList",
+}
 function download(dataurl, filename) {
     const link = document.createElement("a");
     link.href = dataurl;
@@ -422,11 +438,15 @@ function resultFeldolg(data) {
     console.log("Válasz:");
     console.log(data);
 
+    console.log("Lists:");
+    console.log(data.Lists);
+
+
     ResultsTableDelete();
-    ResultsTableUpdate(data.Kunden);
+    ResultsTableUpdate(data.Users);
     deleteFilterOptions();
     setFilterOptions(data.Lists);
-    Lists = data.Lists;
+    //Lists = data.Lists;
 }
 
 function deleteUser(callerUser) {

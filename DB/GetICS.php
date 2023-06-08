@@ -25,14 +25,9 @@ $actualUser="Lars";
 
 $ZielKundenID=$_GET["ZielKundenID"];
 $servername = "localhost";
-/*
 $username = "zielkundenliste_user";
 $password = "pass_for_zielkundenliste_user";
 $database="zielkundenliste_DB";
-*/
-$username = "dmtourda_zielkundenliste_user";
-$password = "pass_for_zielkundenliste_user";
-$database="dmtourda_zielkundenliste";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $database);
