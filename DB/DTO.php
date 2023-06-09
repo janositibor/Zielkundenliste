@@ -50,4 +50,14 @@ class DTO{
         $temp=array_unique($inputArray);
         return $this->assoc2indexed($temp);
     }
+    function toString(){
+        $output="";
+        foreach($this->lists as $val){
+            $output.=" {";
+            implode(",", $this->lists->$val );
+            $output.=" }";
+
+        }
+        return $output;
+    }
 }

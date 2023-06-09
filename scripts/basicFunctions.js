@@ -10,7 +10,7 @@ let AdatListak = {
     "Ort": "OrtList",
     "Postleitzahl": "PostleitzahlList",
     "Land_Region": "Land_RegionList",
-    "Telefonnummer": "TelefonnummersList",
+    "Telefonnummer": "TelefonnummerList",
     "EMailAdresse": "EMailAdresseList",
     "Anmerkungen": "AnmerkungenList",
 }
@@ -34,11 +34,16 @@ function createFilterOptions() {
 }
 
 function setFilterOptions(Lists) {
+    console.log("setFilterOptions:");
+    // console.log(Lists);
     let i = 0;
     for (let k in AdatListak) {
         let htmlElem = document.getElementById(k);
+        console.log(k);
+        console.log(htmlElem);
         let betoltendoLista = Lists[AdatListak[k]];
         AktualLists[AdatListak[k]] = betoltendoLista;
+        console.log(betoltendoLista);
         window['ac_' + i] = new Autocomplete(htmlElem, betoltendoLista);
         i++;
     }
