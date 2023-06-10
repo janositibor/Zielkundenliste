@@ -87,7 +87,7 @@ function checkValueOfInputElement(InputElement) {
 }
 
 let FocusedElement = function () {
-    var focused = document.activeElement;
+    let focused = document.activeElement;
     if (!focused || focused == document.body) {
         focused = null;
     } else if (document.querySelector) {
@@ -402,7 +402,6 @@ function deleteUser(callerUser) {
         let fetchInit =
             {
                 method: "POST",
-                headers: new Headers(),
                 mode: "cors",
                 cache: "default",
                 headers: {
@@ -425,7 +424,6 @@ function updateUser(userID, caller) {
     let fetchInit =
         {
             method: "POST",
-            headers: new Headers(),
             mode: "cors",
             cache: "default",
             headers: {
@@ -456,7 +454,6 @@ function uploadUser(caller) {
     let fetchInit =
         {
             method: "POST",
-            headers: new Headers(),
             mode: "cors",
             cache: "default",
             headers: {
@@ -488,7 +485,6 @@ function getUsers(changeFocusToResults = true, DeleteFilter = false) {
     let fetchInit =
         {
             method: "POST",
-            headers: new Headers(),
             mode: "cors",
             cache: "default",
             headers: {

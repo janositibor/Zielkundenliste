@@ -90,10 +90,10 @@ class UserRepository{
             $index=0;
             foreach ($FilterOptions as $key => $value){
                 $index++;
+                if($index>1){
+                    $query.=" AND ";
+                }
                 if($key!="Erinnerung_Outlook"){
-                    if($index>1){
-                        $query.=" AND ";
-                    }
                     $query.=$key." = \"".$value."\"";
                 }
                 else{
