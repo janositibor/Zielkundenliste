@@ -17,6 +17,14 @@ class UserRepository{
         $this->output=new DTO();
     }
 
+    public function getUser($ZielKundenID){
+        $FilterOptions=array("ZielKundenID"=>$ZielKundenID);
+        $this->query=$this->createQueryForGetUsers($FilterOptions);
+        $result=$this->database->runQuery($this->query);
+        $this->closeDataBase();
+        return $result;
+    }
+
     public function getUsers(array $FilterOptions){
         $this->query=$this->createQueryForGetUsers($FilterOptions);
         $this->processQuery(true);
@@ -137,6 +145,8 @@ class UserRepository{
         $response = json_encode($this->output->getData());
         echo $response;
     }
+
+
 
 
 }
