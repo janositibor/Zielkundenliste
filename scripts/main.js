@@ -21,7 +21,7 @@ for (var i = 0; i < FilterElements.length; i++) {
 createFilterOptions();
 
 let ResetButtons = document.getElementsByName("Reset");
-for (var i = 0; i < ResetButtons.length; i++) {
+for (i = 0; i < ResetButtons.length; i++) {
     if (ResetButtons[i].addEventListener) {
         ResetButtons[i].addEventListener('click', function () {
                 reset(this);

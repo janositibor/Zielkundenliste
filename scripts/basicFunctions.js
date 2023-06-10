@@ -1,19 +1,7 @@
 let AktualLists = {};
 
-let AdatListak = {
-    "ZielKundenID": "ZielKundenIDList",
-    "KundenPRIO": "KundenPRIOList",
-    "WerKummertSich": "WerKummertSichList",
-    "Firmenname": "FirmennameList",
-    "NameDesKontakts": "NameDesKontaktsList",
-    "RechnungsAdresse": "RechnungsAdresseList",
-    "Ort": "OrtList",
-    "Postleitzahl": "PostleitzahlList",
-    "Land_Region": "Land_RegionList",
-    "Telefonnummer": "TelefonnummerList",
-    "EMailAdresse": "EMailAdresseList",
-    "Anmerkungen": "AnmerkungenList",
-}
+let fieldNameList = ["ZielKundenID", "KundenPRIO", "WerKummertSich", "Firmenname", "NameDesKontakts", "RechnungsAdresse", "Ort", "Postleitzahl", "Land_Region", "Telefonnummer", "EMailAdresse", "Anmerkungen"];
+
 function download(dataurl, filename) {
     const link = document.createElement("a");
     link.href = dataurl;
@@ -22,11 +10,9 @@ function download(dataurl, filename) {
 }
 
 function createFilterOptions() {
-    console.log("createFilterOptions meghívva!");
-
     let i = 0;
-    for (let k in AdatListak) {
-        let htmlElem = document.getElementById(k);
+    for (let fieldName of fieldNameList) {
+        let htmlElem = document.getElementById(fieldName);
         let betoltendoLista = ["Any"];
         window['ac_' + i] = new Autocomplete(htmlElem, betoltendoLista);
         i++;
@@ -34,24 +20,24 @@ function createFilterOptions() {
 }
 
 function setFilterOptions(Lists) {
-    console.log("setFilterOptions:");
-    // console.log(Lists);
     let i = 0;
-    for (let k in AdatListak) {
-        let htmlElem = document.getElementById(k);
-        console.log(k);
-        console.log(htmlElem);
-        let betoltendoLista = Lists[AdatListak[k]];
-        AktualLists[AdatListak[k]] = betoltendoLista;
-        console.log(betoltendoLista);
+    for (let fieldName of fieldNameList) {
+        let htmlElem = document.getElementById(fieldName);
+        let betoltendoLista = Lists[createListNameFromFieldName(fieldName)];
+        AktualLists[createListNameFromFieldName(fieldName)] = betoltendoLista;
+        // console.log(betoltendoLista);
         window['ac_' + i] = new Autocomplete(htmlElem, betoltendoLista);
         i++;
     }
 }
 
+function createListNameFromFieldName(FieldName) {
+    return FieldName + "List";
+}
+
 function deleteFilterOptions() {
     let i = 0;
-    for (let k in AdatListak) {
+    for (let fieldName of fieldNameList) {
         window['ac_' + i].clean();
         delete window['ac_' + i];
         i++;
@@ -60,50 +46,43 @@ function deleteFilterOptions() {
 
 function reset(caller) {
     let divElement = caller.parentElement;
-
     ActiveFilterElement = divElement.querySelector("input.Filter");
-
     ActiveFilterElement.classList.remove('ActiveFilter');
     ActiveFilterElement.value = "Any or start typing";
-
     getUsers(false);
 }
 
-function adjustInputElement(InputElement, lekeressel = true) {
-    let ujertek = InputElement.value;
+function adjustInputElement(InputElement, reloadUsers = true) {
+    let newValue = InputElement.value;
 
-    if (ujertek == "Any" || ujertek == "Any or start typing" || ujertek == "") {
+    if (newValue == "Any" || newValue == "Any or start typing" || newValue == "") {
         InputElement.classList.remove('ActiveFilter');
     } else {
         InputElement.classList.add('ActiveFilter');
     }
-    if (lekeressel) {
-        //console.log("lekeres Inditva");
+    if (reloadUsers) {
         getUsers(false);
     }
 }
 
-function adjustDateForFilter(InputElement, lekeressel = true) {
-    let ujertek = InputElement.value;
-
-    if (ujertek == "Any" || ujertek == "Any or start typing" || ujertek == "") {
+function adjustDateForFilter(InputElement, reloadUsers = true) {
+    let newValue = InputElement.value;
+    if (newValue == "Any" || newValue == "Any or start typing" || newValue == "") {
         InputElement.classList.remove('ActiveFilter');
     } else {
         InputElement.classList.add('ActiveFilter');
     }
-
     document.getElementById("Anmerkungen").focus();
-
-    if (lekeressel) {
+    if (reloadUsers) {
         getUsers(false);
     }
 }
 
 function checkValueOfInputElement(InputElement) {
-    let ujertek = InputElement.value;
+    let newValue = InputElement.value;
     let elementId = InputElement.id;
-    let HelyesErtekek = AktualLists[AdatListak[elementId]];
-    const index = HelyesErtekek.findIndex(x => x.trim().toUpperCase() === ujertek.trim().toUpperCase());
+    let options = AktualLists[createListNameFromFieldName(elementId)];
+    const index = options.findIndex(x => x.trim().toUpperCase() === newValue.trim().toUpperCase());
     return index;
 }
 
@@ -113,19 +92,17 @@ let FocusedElement = function () {
         focused = null;
     } else if (document.querySelector) {
         focused = document.querySelector(":focus");
-        //console.log("focused (document.querySelector):");
-        //console.log(focused);
     }
     return focused;
 }
 
-function shellForStillHerePromise(szuloJelolt) {
+function shellForStillHerePromise(candidateForParent) {
     return new Promise(function (resolve, reject) {
         setTimeout(() => {
             active = FocusedElement();
-            let StillHere = (active === szuloJelolt);
+            let StillHere = (active === candidateForParent);
             if (!StillHere) {
-                resolve(szuloJelolt);
+                resolve(candidateForParent);
             }
         }, 100);
 
@@ -176,17 +153,13 @@ let inputTextElementsClickEvent = function (event) {
             this.setSelectionRange(0, this.value.length);
         }
     }
-
 }
 
-
-let createButtonGroup = (User, szulo) => {
+let createButtonGroup = (User, parentElement) => {
     let tdElement = document.createElement("td");
-
     if (User.editable) {
         let group = document.createElement("div");
         group.className = "btn-group";
-
         let BtnSzerkeszt = document.createElement("button");
         BtnSzerkeszt.className = "btn btn-info";
         let IkonSzerkeszt = document.createElement("i");
@@ -209,16 +182,15 @@ let createButtonGroup = (User, szulo) => {
         group.appendChild(BtnTorol);
         tdElement.appendChild(group);
     }
-    szulo.appendChild(tdElement)
+    parentElement.appendChild(tdElement)
 }
 
-let CreateTD = (tartalom, szulo) => {
+let CreateTD = (content, parentElement) => {
     let tdElement = document.createElement("td");
     let innerHtml = "";
-    innerHtml += tartalom;
-
+    innerHtml += content;
     tdElement.innerHTML = innerHtml;
-    szulo.appendChild(tdElement)
+    parentElement.appendChild(tdElement)
 }
 
 function createAnyElement(name, attributes) {
@@ -238,7 +210,7 @@ function ResultsTableDelete() {
     createTableRowforInput();
 }
 
-let CreateTDWithSendButton = (szulo) => {
+let CreateTDWithSendButton = (parentElement) => {
     let tdElement = document.createElement("td");
     let BtnSend = document.createElement("button");
     BtnSend.className = "btn btn-success";
@@ -250,69 +222,61 @@ let CreateTDWithSendButton = (szulo) => {
         false);
     BtnSend.appendChild(IkonSend);
     tdElement.appendChild(BtnSend);
-    szulo.appendChild(tdElement);
+    parentElement.appendChild(tdElement);
 }
 
-let CreateTDWithInput = (tartalom, name, szulo) => {
+let CreateTDWithInput = (content, name, parentElement, date = false) => {
     let tdElement = document.createElement("td");
-    let input = createAnyElement("input", {
+    let attributes = {
         class: "form-control inputDataField",
         type: "text",
         name: name,
-        value: tartalom
-    });
+        value: content
+    };
+    if (date) {
+        attributes.type = "date";
+    }
+    let input = createAnyElement("input", attributes);
     input.style.cursor = "text";
     tdElement.appendChild(input);
 
-    szulo.appendChild(tdElement);
-}
-let CreateTDWithDate = (tartalom, name, szulo) => {
-    let tdElement = document.createElement("td");
-    let input = createAnyElement("input", {
-        class: "form-control inputDataField",
-        name: name,
-        type: "date",
-        value: tartalom
-    });
-    tdElement.appendChild(input);
-
-    szulo.appendChild(tdElement);
+    parentElement.appendChild(tdElement);
 }
 
-let CreateTDWithLevelDropdown = (value, szulo) => {
+let CreateTDWithDropdown = (value, parentElement, name) => {
     let tdElement = document.createElement("td");
     let divElement = createAnyElement("div", {class: "dropdown"});
     let buttonElement = createAnyElement("button", {
         class: "btn btn-secondary dropdown-toggle",
         type: "button",
-        name: "LevelValue",
+        name: name + "Value",
         "data-bs-toggle": "dropdown",
         "aria-expanded": "false"
     });
     buttonElement.innerHTML = value;
-    let ulElement = createAnyElement("ul", {class: "dropdown-menu", name: "dropdownMenuLevel"});
+    let ulElement = createAnyElement("ul", {class: "dropdown-menu", name: "dropdownMenu" + name});
     divElement.appendChild(buttonElement);
     divElement.appendChild(ulElement);
     tdElement.appendChild(divElement);
-    szulo.appendChild(tdElement);
+    parentElement.appendChild(tdElement);
 }
-let CreateTDWithAdminDropdown = (value, szulo) => {
-    let tdElement = document.createElement("td");
-    let divElement = createAnyElement("div", {class: "dropdown"});
-    let buttonElement = createAnyElement("button", {
-        class: "btn btn-secondary dropdown-toggle",
-        name: "AdminValue",
-        type: "button",
-        "data-bs-toggle": "dropdown",
-        "aria-expanded": "false"
-    });
-    buttonElement.innerHTML = value;
-    let ulElement = createAnyElement("ul", {class: "dropdown-menu", name: "dropdownMenuAdmin"});
-    divElement.appendChild(buttonElement);
-    divElement.appendChild(ulElement);
-    tdElement.appendChild(divElement);
-    szulo.appendChild(tdElement);
-}
+// let CreateTDWithAdminDropdown = (value, szulo) => {
+//     let tdElement = document.createElement("td");
+//     let divElement = createAnyElement("div", {class: "dropdown"});
+//     let buttonElement = createAnyElement("button", {
+//         class: "btn btn-secondary dropdown-toggle",
+//         name: "AdminValue",
+//         type: "button",
+//         "data-bs-toggle": "dropdown",
+//         "aria-expanded": "false"
+//     });
+//     buttonElement.innerHTML = value;
+//     let ulElement = createAnyElement("ul", {class: "dropdown-menu", name: "dropdownMenuAdmin"});
+//     divElement.appendChild(buttonElement);
+//     divElement.appendChild(ulElement);
+//     tdElement.appendChild(divElement);
+//     szulo.appendChild(tdElement);
+// }
 let CreateTDWithICS = (ZielKundenID, szulo) => {
     let tdElement = document.createElement("td");
     let BtnICS = document.createElement("button");
@@ -365,8 +329,8 @@ let DropdownItemClickEvent = function () {
 function createTableRowforInput() {
     let tBodyElement = document.querySelector("#NewCustomerTable tbody");
     let trElement = document.createElement("tr");
-    CreateTDWithLevelDropdown(levelList[0], trElement);
-    CreateTDWithAdminDropdown(adminList[0], trElement);
+    CreateTDWithDropdown(levelList[0], trElement, "Level");
+    CreateTDWithDropdown(adminList[0], trElement, "Admin");
     CreateTDWithInput("", "Firmenname", trElement);
     CreateTDWithInput("", "NameDesKontakts", trElement);
     CreateTDWithInput("", "RechnungsAdresse", trElement);
@@ -375,7 +339,7 @@ function createTableRowforInput() {
     CreateTDWithInput("", "Land_Region", trElement);
     CreateTDWithInput("", "Telefonnummer", trElement);
     CreateTDWithInput("", "EMailAdresse", trElement);
-    CreateTDWithDate("", "Erinnerung_Outlook", trElement);
+    CreateTDWithInput("", "Erinnerung_Outlook", trElement, true);
     CreateTDWithInput("", "Anmerkungen", trElement);
     CreateTDWithSendButton(trElement);
     tBodyElement.appendChild(trElement);
@@ -397,8 +361,8 @@ function ResultsTableUpdate(data) {
         CreateTD(User.ZielKundenID, trElement);
 
         if (User.editable) {
-            CreateTDWithLevelDropdown(User.KundenPRIO, trElement);
-            CreateTDWithAdminDropdown(User.WerKummertSich, trElement);
+            CreateTDWithDropdown(User.KundenPRIO, trElement, "Level");
+            CreateTDWithDropdown(User.WerKummertSich, trElement, "Admin");
             CreateTDWithInput(User.Firmenname, "Firmenname", trElement);
             CreateTDWithInput(User.NameDesKontakts, "NameDesKontakts", trElement);
             CreateTDWithInput(User.RechnungsAdresse, "RechnungsAdresse", trElement);
@@ -407,7 +371,7 @@ function ResultsTableUpdate(data) {
             CreateTDWithInput(User.Land_Region, "Land_Region", trElement);
             CreateTDWithInput(User.Telefonnummer, "Telefonnummer", trElement);
             CreateTDWithInput(User.EMailAdresse, "EMailAdresse", trElement);
-            CreateTDWithDate(User.Erinnerung_Outlook, "Erinnerung_Outlook", trElement);
+            CreateTDWithInput(User.Erinnerung_Outlook, "Erinnerung_Outlook", trElement, true);
             CreateTDWithICS(User.ZielKundenID, trElement);
             CreateTDWithInput(User.Anmerkungen, "Anmerkungen", trElement);
         } else {
@@ -440,18 +404,12 @@ function ResultsTableUpdate(data) {
 }
 
 function resultProcess(data) {
-    console.log("Válasz:");
+    console.log("Backend answered the following:");
     console.log(data);
-
-    console.log("Lists:");
-    console.log(data.Lists);
-
-
     ResultsTableDelete();
     ResultsTableUpdate(data.users);
     deleteFilterOptions();
     setFilterOptions(data.lists);
-    //Lists = data.Lists;
 }
 
 function deleteUser(callerUser) {
@@ -544,8 +502,6 @@ function getUsers(changeFocusToResults = true, DeleteFilter = false) {
         }
 
     }
-    console.log("FilterOptions:");
-    console.log(FilterOptions);
 
     let fetchInit =
         {
