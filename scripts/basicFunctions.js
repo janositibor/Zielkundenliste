@@ -105,7 +105,6 @@ function shellForStillHerePromise(candidateForParent) {
                 resolve(candidateForParent);
             }
         }, 100);
-
     });
 }
 
@@ -129,8 +128,8 @@ let FilterElementFocusOutEvent = function () {
     } else {
         adjustDateForFilter(InputElement);
     }
-
 }
+
 let FilterElementChangeEvent = function () {
     InputElement = this;
     if (this.id != "Erinnerung_Outlook") {
@@ -239,7 +238,6 @@ let CreateTDWithInput = (content, name, parentElement, date = false) => {
     let input = createAnyElement("input", attributes);
     input.style.cursor = "text";
     tdElement.appendChild(input);
-
     parentElement.appendChild(tdElement);
 }
 
@@ -260,23 +258,7 @@ let CreateTDWithDropdown = (value, parentElement, name) => {
     tdElement.appendChild(divElement);
     parentElement.appendChild(tdElement);
 }
-// let CreateTDWithAdminDropdown = (value, szulo) => {
-//     let tdElement = document.createElement("td");
-//     let divElement = createAnyElement("div", {class: "dropdown"});
-//     let buttonElement = createAnyElement("button", {
-//         class: "btn btn-secondary dropdown-toggle",
-//         name: "AdminValue",
-//         type: "button",
-//         "data-bs-toggle": "dropdown",
-//         "aria-expanded": "false"
-//     });
-//     buttonElement.innerHTML = value;
-//     let ulElement = createAnyElement("ul", {class: "dropdown-menu", name: "dropdownMenuAdmin"});
-//     divElement.appendChild(buttonElement);
-//     divElement.appendChild(ulElement);
-//     tdElement.appendChild(divElement);
-//     szulo.appendChild(tdElement);
-// }
+
 let CreateTDWithICS = (ZielKundenID, szulo) => {
     let tdElement = document.createElement("td");
     let BtnICS = document.createElement("button");
@@ -288,7 +270,6 @@ let CreateTDWithICS = (ZielKundenID, szulo) => {
             download("./backend/GetICS.php?ZielKundenID=" + ZielKundenID, "Erinnerung" + ZielKundenID + ".ics");
         },
         false);
-
     BtnICS.appendChild(IkonDownload);
     tdElement.appendChild(BtnICS);
     szulo.appendChild(tdElement);
@@ -319,6 +300,7 @@ function CreateList(element, szulo) {
 let btnRefresh = function (Btn, Ertek) {
     Btn.innerHTML = Ertek;
 }
+
 let DropdownItemClickEvent = function () {
     let ujertek = this.innerHTML;
     let dropdownDiv = this.parentElement.parentElement;
