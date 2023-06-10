@@ -66,7 +66,7 @@ function reset(caller) {
     ActiveFilterElement.classList.remove('ActiveFilter');
     ActiveFilterElement.value = "Any or start typing";
 
-    lekeres(false);
+    getUsers(false);
 }
 
 function adjustInputElement(InputElement, lekeressel = true) {
@@ -79,7 +79,7 @@ function adjustInputElement(InputElement, lekeressel = true) {
     }
     if (lekeressel) {
         //console.log("lekeres Inditva");
-        lekeres(false);
+        getUsers(false);
     }
 }
 
@@ -95,7 +95,7 @@ function adjustDateForFilter(InputElement, lekeressel = true) {
     document.getElementById("Anmerkungen").focus();
 
     if (lekeressel) {
-        lekeres(false);
+        getUsers(false);
     }
 }
 
@@ -321,7 +321,7 @@ let CreateTDWithICS = (ZielKundenID, szulo) => {
     IkonDownload.className = "fas fa-download text-light";
     //IkonDownload.className = "fas fa-plus-circle text-light";
     BtnICS.addEventListener('click', function () {
-            download("./DB/GetICS.php?ZielKundenID=" + ZielKundenID, "Erinnerung" + ZielKundenID + ".ics");
+            download("./backend/GetICS.php?ZielKundenID=" + ZielKundenID, "Erinnerung" + ZielKundenID + ".ics");
         },
         false);
 
@@ -381,7 +381,7 @@ function createTableRowforInput() {
     tBodyElement.appendChild(trElement);
 }
 
-function ResultsTableUpdate(data, songListToHighlight) {
+function ResultsTableUpdate(data) {
     let resultsDiv = document.querySelector("#results");
     let talalatokSzamaStrong = document.querySelector("#talaltokSzama");
     talalatokSzamaStrong.innerHTML = data.length;
@@ -439,7 +439,7 @@ function ResultsTableUpdate(data, songListToHighlight) {
     }
 }
 
-function resultFeldolg(data) {
+function resultProcess(data) {
     console.log("Válasz:");
     console.log(data);
 
@@ -448,9 +448,9 @@ function resultFeldolg(data) {
 
 
     ResultsTableDelete();
-    ResultsTableUpdate(data.Users);
+    ResultsTableUpdate(data.users);
     deleteFilterOptions();
-    setFilterOptions(data.Lists);
+    setFilterOptions(data.lists);
     //Lists = data.Lists;
 }
 
@@ -471,8 +471,8 @@ function deleteUser(callerUser) {
                 credentials: 'same-origin',
                 body: JSON.stringify(Options)
             };
-        const fetchData = fetch("./DB/DeleteUser.php", fetchInit);
-        fetchData.then(response => response.json(), err => "Baj van!").then(response => lekeres());
+        const fetchData = fetch("./backend/DeleteUser.php", fetchInit);
+        fetchData.then(response => response.json(), err => "Baj van!").then(response => getUsers());
     }
 
 }
@@ -494,8 +494,8 @@ function updateUser(userID, caller) {
             credentials: 'same-origin',
             body: JSON.stringify(data)
         };
-    const fetchData = fetch("./DB/UpdateUser.php", fetchInit);
-    fetchData.then(response => response.json(), err => "Baj van!").then(response => lekeres());
+    const fetchData = fetch("./backend/UpdateUser.php", fetchInit);
+    fetchData.then(response => response.json(), err => "Baj van!").then(response => getUsers());
 }
 
 function collectDataFromTr(trElement) {
@@ -525,11 +525,11 @@ function uploadUser(caller) {
             credentials: 'same-origin',
             body: JSON.stringify(data)
         };
-    const fetchData = fetch("./DB/RegisterUser.php", fetchInit);
-    fetchData.then(response => response.json(), err => "Baj van!").then(response => lekeres());
+    const fetchData = fetch("./backend/RegisterUser.php", fetchInit);
+    fetchData.then(response => response.json(), err => "Baj van!").then(response => getUsers());
 }
 
-function lekeres(Btn = true, DeleteFilter = false) {
+function getUsers(changeFocusToResults = true, DeleteFilter = false) {
     let elem;
     var FilterOptions = {};
     activeFilters = document.getElementsByClassName('ActiveFilter');
@@ -559,15 +559,15 @@ function lekeres(Btn = true, DeleteFilter = false) {
             credentials: 'same-origin',
             body: JSON.stringify(FilterOptions)
         };
-    const fetchData = fetch("./DB/GetUsers.php", fetchInit);
-    fetchData.then(data => data.json(), err => "Baj van!").then(data => resultFeldolg(data));
+    const fetchData = fetch("./backend/GetUsers.php", fetchInit);
+    fetchData.then(data => data.json(), err => "Some error occurred!").then(data => resultProcess(data));
     if (DeleteFilter) {
         FilterElements = document.querySelectorAll(".Filter");
         for (let htmlElement of FilterElements) {
             htmlElement.value = "Any or start typing";
         }
     }
-    if (Btn) {
+    if (changeFocusToResults) {
         window.location.href = "#results";
     }
 }

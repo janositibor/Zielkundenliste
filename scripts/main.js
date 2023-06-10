@@ -30,4 +30,4 @@ for (var i = 0; i < ResetButtons.length; i++) {
     }
 }
 
-lekeres(false, true);
+getUsers(false, true);

@@ -27,7 +27,7 @@ class DTO{
 
     function getData(){
         $this->convertListsForOutput();
-        return (array("Lists"=>$this->lists,"Users"=>$this->users,"query"=>$this->query));
+        return (array("lists"=>$this->lists,"users"=>$this->users,"query"=>$this->query));
     }
 
     private function convertListsForOutput(){
